@@ -52,7 +52,7 @@ SOURCES +=\
     LineEditDialog.cpp \
     MiscUtil.cpp \
     MyClass.cpp \
-    database.cpp \
+    Database.cpp \
     pluginmain.cpp \
     Classroom.cpp \
     PluginDialog.cpp \
