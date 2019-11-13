@@ -79,12 +79,18 @@ void QtPlugin::ShowTab()
 
 void QtPlugin::Refresh()
 {
-    if(pluginTabWidget) pluginTabWidget->refresh();
+    if(pluginTabWidget)
+        pluginTabWidget->refresh();
+    if(pluginDialog)
+        pluginDialog->refresh();
 }
 
 void QtPlugin::RefreshClasses()
 {
-    if(pluginTabWidget) pluginTabWidget->refreshClasses();
+    if(pluginTabWidget)
+        pluginTabWidget->refreshClasses();
+    if(pluginDialog)
+        pluginDialog->refreshClasses();
 }
 
 void QtPlugin::cbSelChanged(void* VA)
@@ -101,6 +107,8 @@ void QtPlugin::cbSelChanged(void* VA)
         currentClass->memberfunction.insert(start);
         QtPlugin::Refresh();
     }
+    if(pluginDialog)
+        pluginDialog->selChanged((duint)VA);
 }
 
 void QtPlugin::cbInit()

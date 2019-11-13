@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <windows.h>
+#include "pluginmain.h"
 
 namespace Ui
 {
@@ -16,6 +17,12 @@ class PluginDialog : public QDialog
 public:
     explicit PluginDialog(QWidget* parent);
     ~PluginDialog();
+
+public slots:
+    void indexChaged(int index);
+    void selChanged(duint VA);
+    void refresh();
+    void refreshClasses();
 
 private:
     Ui::PluginDialog *ui;
