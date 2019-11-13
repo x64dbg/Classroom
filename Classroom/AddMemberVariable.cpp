@@ -9,6 +9,8 @@ AddMemberVariable::AddMemberVariable(QWidget *parent) :
     ui(new Ui::AddMemberVariable)
 {
     ui->setupUi(this);
+    setModal(true);
+    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint | Qt::MSWindowsFixedSizeDialogHint);
     connect(ui->cancel, SIGNAL(clicked()), this, SLOT(close()));
     connect(ui->ok, SIGNAL(clicked()), this, SLOT(ok()));
 
@@ -41,7 +43,7 @@ void AddMemberVariable::Init(MyClass* currentClass, int offset)
             {
                 const MyClassMemberVariable& variable = currentClass->membervariable.at(i).second;
                 ui->label->setText(variable.label);
-                ui->descriptions->setPlainText(variable.comment);
+                ui->descriptions->setText(variable.comment);
                 ui->vartype->setCurrentText(variable.vartype);
                 break;
             }
@@ -80,7 +82,7 @@ void AddMemberVariable::ok()
         {
             MyClassMemberVariable& variable = currentClass->membervariable[i].second;
             variable.label = ui->label->text();
-            variable.comment = ui->descriptions->toPlainText();
+            variable.comment = ui->descriptions->text();
             variable.vartype = ui->vartype->currentText();
             accept();
             QtPlugin::Refresh();
@@ -91,9 +93,12 @@ void AddMemberVariable::ok()
     }
     MyClassMemberVariable newvariable;
     newvariable.label = ui->label->text();
-    newvariable.comment = ui->descriptions->toPlainText();
+    newvariable.comment = ui->descriptions->text();
     newvariable.vartype = ui->vartype->currentText();
-    currentClass->membervariable.insert(before, std::make_pair(offset, newvariable));
+    if(currentClass->membervariable.size() > 0 && offset > currentClass->membervariable.last().first)
+        currentClass->membervariable.append(std::make_pair(offset, newvariable));
+    else
+        currentClass->membervariable.insert(before, std::make_pair(offset, newvariable));
     accept();
     QtPlugin::Refresh();
 }

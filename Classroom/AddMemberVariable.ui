@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>305</width>
-    <height>176</height>
+    <width>351</width>
+    <height>125</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -85,7 +85,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QTextEdit" name="descriptions">
+    <widget class="QLineEdit" name="descriptions">
      <property name="placeholderText">
       <string>Add comments here.</string>
      </property>

@@ -17,8 +17,11 @@ namespace QtPlugin
     //Callback
     void cbInit();
     void cbStop();
+    void cbSelChanged(void* VA);
     void cbClassroom(char* userdata);
     void cbClassMemberVar(std::pair<MyClass*, int>* userdata);
+    void cbDelClass(char* userdata);
+    void cbDelClassMemberVar(std::pair<MyClass*, int>* userdata);
 } //QtPlugin
 
 #endif // QTPLUGIN_H

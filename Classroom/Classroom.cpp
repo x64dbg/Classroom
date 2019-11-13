@@ -62,7 +62,6 @@ void QtPlugin::Stop()
     pluginDialog->close();
     delete pluginDialog;
     delete pluginTabWidget;
-
     SetEvent(hStopEvent);
 }
 
@@ -88,11 +87,25 @@ void QtPlugin::RefreshClasses()
     if(pluginTabWidget) pluginTabWidget->refreshClasses();
 }
 
+void QtPlugin::cbSelChanged(void* VA)
+{
+    duint start, end;
+    MyClass* currentClass;
+    if(!DbgFunctionGet((duint)VA, &start, &end))
+        return;
+    currentClass = Plugin::getCurrentClass();
+    if(currentClass == nullptr)
+        return;
+    if(!currentClass->memberfunction.contains(start))
+    {
+        currentClass->memberfunction.insert(start);
+        QtPlugin::Refresh();
+    }
+}
+
 void QtPlugin::cbInit()
 {
-    for(auto & i : Plugin::classroom)
-        delete i;
-    Plugin::classroom.clear();
+
 }
 
 void QtPlugin::cbStop()
@@ -100,7 +113,7 @@ void QtPlugin::cbStop()
     for(auto & i : Plugin::classroom)
         delete i;
     Plugin::classroom.clear();
-    Refresh();
+    RefreshClasses();
 }
 
 void QtPlugin::cbClassroom(char* userdata)
@@ -120,4 +133,39 @@ void QtPlugin::cbClassMemberVar(std::pair<MyClass*, int>* userdata)
     dialog.Init(userdata->first, userdata->second);
     delete userdata;
     dialog.exec();
+}
+
+void QtPlugin::cbDelClass(char* userdata)
+{
+    if(userdata != nullptr)
+    {
+        QString className = QString::fromUtf8((char*)userdata);
+        free(userdata);//userdata was allocated with _strdup()
+        for(int i = 0; i < Plugin::classroom.size(); i++)
+        {
+            if(Plugin::classroom.at(i)->name == className)
+            {
+                delete Plugin::classroom[i];
+                Plugin::classroom.removeAt(i);
+                RefreshClasses();
+                return;
+            }
+        }
+    }
+}
+
+void QtPlugin::cbDelClassMemberVar(std::pair<MyClass*, int>* userdata)
+{
+    auto & list = userdata->first->membervariable;
+    for(int i = 0; i < list.size(); i++)
+    {
+        if(list.at(i).first == userdata->second)
+        {
+            delete userdata;
+            list.removeAt(i);
+            Refresh();
+            return;
+        }
+    }
+    delete userdata;
 }

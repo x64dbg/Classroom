@@ -4,7 +4,6 @@
 LineEditDialog::LineEditDialog(QWidget* parent) : QDialog(parent), ui(new Ui::LineEditDialog)
 {
     ui->setupUi(this);
-    setModal(true);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint | Qt::MSWindowsFixedSizeDialogHint);
     setModal(true); //modal window
     ui->checkBox->hide();

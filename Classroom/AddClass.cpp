@@ -9,6 +9,8 @@ AddClass::AddClass(QWidget *parent) :
     ui(new Ui::Dialog)
 {
     ui->setupUi(this);
+    setModal(true);
+    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint | Qt::MSWindowsFixedSizeDialogHint);
     connect(ui->btnCancel,SIGNAL(clicked()),this,SLOT(close()));
     connect(ui->btnOk,SIGNAL(clicked()),this,SLOT(ok()));
 }
@@ -26,6 +28,7 @@ void AddClass::setClassName(const QString & name)
     if(myclass != nullptr)
     {
         ui->description->setText(myclass->comment);
+        setWindowTitle(tr("Edit class %1").arg(name));
         ui->editSize->setText(myclass->size >= 0 ? QString::number(myclass->size) : "-");
     }
 }
@@ -62,5 +65,9 @@ void AddClass::ok()
     if(isNewClass)
         Plugin::classroom.push_back(myclass);
     accept();
+    //Try to add the member function selected by the user, if applicable
+    SELECTIONDATA dissel;
+    if(GuiSelectionGet(GUI_DISASSEMBLY, &dissel))
+        QtPlugin::cbSelChanged((void*)dissel.start);
     QtPlugin::RefreshClasses();
 }

@@ -32,19 +32,22 @@ void PluginMainWindow::refreshClasses()
     if(ui->classes->currentRow()>=0)
         currentSelected=ui->classes->currentItem()->text();
     ui->classes->clear();
-    QStringList classes;
-    for(auto & i : Plugin::classroom){
-        classes.append(i->name);
-    }
-    classes.sort();
-    ui->classes->addItems(classes);
-    if(currentSelected.size()>0)
+    if(Plugin::classroom.size() > 0)
     {
-        for(int i=0;i<classes.size();i++){
-            if(classes[i]==currentSelected)
-            {
-                ui->classes->setCurrentRow(i);
-                break;
+        QStringList classes;
+        for(auto & i : Plugin::classroom){
+            classes.append(i->name);
+        }
+        classes.sort();
+        ui->classes->addItems(classes);
+        if(currentSelected.size()>0)
+        {
+            for(int i=0;i<classes.size();i++){
+                if(classes[i]==currentSelected)
+                {
+                    ui->classes->setCurrentRow(i);
+                    break;
+                }
             }
         }
     }
@@ -142,7 +145,7 @@ QString PluginMainWindow::placeholderHtml()
 
 QString PluginMainWindow::aboutHtml()
 {
-    return tr("<h2>Classroom</h2><p>Classroom is a plugin that helps you analyze a object-oriented application.</p>");
+    return tr("<h2>Classroom</h2><p>Classroom is a plugin that helps you analyze an object-oriented application.</p>");
 }
 
 QString PluginMainWindow::classHtml()
@@ -161,8 +164,8 @@ QString PluginMainWindow::classHtml()
     //Header
     html[0]="<h2>"+html[0].toHtmlEscaped()+tr("</h2><p>Size:");
     html.append(currentClass->size == -1 ? tr("<i>Unknown size</i>") : QString::number(currentClass->size));
-    html.append(tr(" <a href=\"x64dbg://localhost/command#classroom %1\">Edit</a>").arg(currentClass->name.toHtmlEscaped()));
-    html.append(tr("</p><h3>Descriptions:</h3><p>")+currentClass->comment.toHtmlEscaped()+"</p>");
+    html.append(tr(" <a href=\"x64dbg://localhost/command#classroom %1\">Edit</a> <a href=\"x64dbg://localhost/command#delclass %1\">Delete</a>").arg(currentClass->name.toHtmlEscaped()));
+    html.append(tr("</p><h3>Descriptions:</h3><p>")+currentClass->comment.toHtmlEscaped().replace("\n","<br/>")+"</p>");
     //Member functions
     html.append(functionHtml(currentClass));
     //Member variables
@@ -180,7 +183,9 @@ QString PluginMainWindow::functionHtml(MyClass* currentClass)
     QByteArray currentClassPrefix;
     if(currentClass->memberfunction.size() == 0)
     {
-        return tr("<h3>Member functions:</h3><p>No member functions known for this class.</p><p>To define a function as a member of this class, add a label to the function that starts with \"%1::\". Make sure to also define the function boundary with Add Function or Analyze.</p>").arg(currentClass->name.toHtmlEscaped());
+        return tr("<h3>Member functions:</h3><p>No member functions known for this class.</p>")
+                +tr("<p>To define a function as a member of this class, add a label to the function that starts with \"%1::\". Make sure to also define the function boundary with Add Function or Analyze.</p>").arg(currentClass->name.toHtmlEscaped())
+                +tr("<p>If you already defined some member functions but they don't show here, you have to go to these functions in the disassembly view so that the data will be updated.</p>");
     }
     currentClassPrefix = currentClass->name.toUtf8();
     currentClassPrefix.append(2, ':');
@@ -243,7 +248,7 @@ QString PluginMainWindow::memberHtml(MyClass* currentClass)
         html.append(i.second.label.toHtmlEscaped());
         html.append("</b>;&nbsp;");
         html.append(i.second.comment.toHtmlEscaped());
-        html.append(QString("&nbsp;<a href=\"x64dbg://localhost/command#classmembervar %1,%2\">Edit</a></p>").arg(currentClass->name.toHtmlEscaped(), ptrstr));
+        html.append(QString("&nbsp;<a href=\"x64dbg://localhost/command#classmembervar %1,%2\">Edit</a>&nbsp;<a href=\"x64dbg://localhost/command#delclassmembervar %1,%2\">Delete</a></p>").arg(currentClass->name.toHtmlEscaped(), ptrstr));
     }
     html.append(tr("<p><a href=\"x64dbg://localhost/command#classmembervar %1\">Add</a></p><hr/>").arg(currentClass->name.toHtmlEscaped()));
     return html.join("");

@@ -41,9 +41,9 @@ TEMPLATE = lib
 LIBS += -luser32 -lshlwapi
 
 !contains(QMAKE_HOST.arch, x86_64) {
-    LIBS += -lx32dbg -lx32bridge -L"$$PWD/pluginsdk"
+    LIBS += -lx32dbg -lx32bridge -ljansson_x86 -L"$$PWD/pluginsdk" -L"$$PWD/pluginsdk/jansson"
 } else {
-    LIBS += -lx64dbg -lx64bridge -L"$$PWD/pluginsdk"
+    LIBS += -lx64dbg -lx64bridge -ljansson_x64 -L"$$PWD/pluginsdk" -L"$$PWD/pluginsdk/jansson"
 }
 
 SOURCES +=\
