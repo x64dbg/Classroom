@@ -7,8 +7,6 @@
 PluginDialog::PluginDialog(QWidget* parent) : QDialog(parent), ui(new Ui::PluginDialog)
 {
     ui->setupUi(this);
-    setWindowFlags(windowFlags() | Qt::MSWindowsFixedSizeDialogHint);
-    setFixedSize(size());
     int w;
     w = fontMetrics().maxWidth();
     connect(ui->classes, SIGNAL(currentIndexChanged(int)), this, SLOT(indexChaged(int)));
@@ -111,10 +109,10 @@ void PluginDialog::selChanged(duint VA)
         start = 0;
     if(start != 0)
     {
-        DbgGetLabelAt(start, SEG_DEFAULT, txtbuffer);
-        ui->memberFunc->setText(QString::fromUtf8(txtbuffer));
-        DbgGetCommentAt(start, txtbuffer);
-        ui->comment->setText(QString::fromUtf8(txtbuffer));
+        if(DbgGetLabelAt(start, SEG_DEFAULT, txtbuffer))
+            ui->memberFunc->setText(QString::fromUtf8(txtbuffer));
+        if(DbgGetCommentAt(start, txtbuffer))
+            ui->comment->setText(QString::fromUtf8(txtbuffer));
     }
     else
     {
@@ -137,7 +135,13 @@ void PluginDialog::selChanged(duint VA)
                         {
                             ui->memberVarList->setCurrentItem(list.first());
                             if(ui->instance->text().size() == 0)
-                                list.first()->setText(3, ToPtrString(instr.arg[i].value));
+                            {
+                                duint realvalue;
+                                if(DbgMemRead(instr.arg[i].value, &realvalue, sizeof(realvalue)))
+                                    list.first()->setText(3, ToPtrString(realvalue));
+                                else
+                                    list.first()->setText(3, "???");
+                            }
                             return;
                         }
                     }

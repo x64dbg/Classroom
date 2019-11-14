@@ -59,7 +59,7 @@
           <string>Enter address of an instance to show value of its members.</string>
          </property>
          <property name="whatsThis">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you know the address of an instance of the class, you can add it here, and press ENTER, so that the value displayed in the following list is sourced from this instance. If left empty, the value displayed will be based on the instruction you are currently selected. For example, if you select the instruction &amp;quot;MOV EAX, DWORD PTR DS:[ESI + 4]&amp;quot;, then the current value of &amp;quot;[ESI + 4]&amp;quot; will be used as the value of variable offset 4. This only works if ESI is indeed an instance of the class.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you know the address of an instance of the class, you can add it here, and press ENTER, so that the value displayed in the following list is sourced from this instance. If left empty, the value displayed will be based on the instruction you currently selected. For example, if you select the instruction &amp;quot;MOV EAX, DWORD PTR DS:[ESI + 4]&amp;quot;, then the current value of &amp;quot;[ESI + 4]&amp;quot; will be used as the value of variable offset 4. This only works if ESI is indeed an instance of the class.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="styleSheet">
           <string notr="true">background-color:#FFFFFF;</string>

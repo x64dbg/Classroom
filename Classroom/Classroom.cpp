@@ -97,15 +97,17 @@ void QtPlugin::cbSelChanged(void* VA)
 {
     duint start, end;
     MyClass* currentClass;
-    if(!DbgFunctionGet((duint)VA, &start, &end))
-        return;
-    currentClass = Plugin::getCurrentClass();
-    if(currentClass == nullptr)
-        return;
-    if(!currentClass->memberfunction.contains(start))
+    if(DbgFunctionGet((duint)VA, &start, &end))
     {
-        currentClass->memberfunction.insert(start);
-        QtPlugin::Refresh();
+        currentClass = Plugin::getCurrentClass();
+        if(currentClass)
+        {
+            if(!currentClass->memberfunction.contains(start))
+            {
+                currentClass->memberfunction.insert(start);
+                QtPlugin::Refresh();
+            }
+        }
     }
     if(pluginDialog)
         pluginDialog->selChanged((duint)VA);
