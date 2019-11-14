@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>QtPlugin</string>
+   <string>Classroom</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resource.qrc">
@@ -36,7 +36,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="classes"/>
+        <widget class="QComboBox" name="classes">
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This combobox lists all defined classes. Select a class in this list to view its member variables in the following list box.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -54,6 +58,15 @@
          <property name="toolTip">
           <string>Enter address of an instance to show value of its members.</string>
          </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you know the address of an instance of the class, you can add it here, and press ENTER, so that the value displayed in the following list is sourced from this instance. If left empty, the value displayed will be based on the instruction you are currently selected. For example, if you select the instruction &amp;quot;MOV EAX, DWORD PTR DS:[ESI + 4]&amp;quot;, then the current value of &amp;quot;[ESI + 4]&amp;quot; will be used as the value of variable offset 4. This only works if ESI is indeed an instance of the class.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color:#FFFFFF;</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
          <property name="placeholderText">
           <string/>
          </property>
@@ -65,6 +78,9 @@
    </item>
    <item>
     <widget class="QTreeWidget" name="memberVarList">
+     <property name="whatsThis">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This list box lists all defined member variables of current class. To modify or add member variables, go to the plugin tab.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="columnCount">
       <number>5</number>
      </property>
@@ -107,12 +123,20 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="memberFunc"/>
+        <widget class="QLineEdit" name="memberFunc">
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This text box shows the label of current function.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
      <item>
-      <widget class="QTextEdit" name="comment"/>
+      <widget class="QTextEdit" name="comment">
+       <property name="whatsThis">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This textbox shows the comment of current function.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
