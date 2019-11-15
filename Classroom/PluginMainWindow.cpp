@@ -178,7 +178,8 @@ QString PluginMainWindow::classHtml()
 QString PluginMainWindow::functionHtml(MyClass* currentClass)
 {
     QStringList html;
-    QList<std::pair<QString, duint>> funcs;
+    using FuncPair = std::pair<QString, duint>;
+    QList<FuncPair> funcs;
     QSet<duint> stalefunction;
     QByteArray currentClassPrefix;
     if(currentClass->memberfunction.size() == 0)
@@ -188,7 +189,7 @@ QString PluginMainWindow::functionHtml(MyClass* currentClass)
                 +tr("<p>If you already defined some member functions but they don't show here, you have to go to these functions in the disassembly view so that the data will be updated.</p>");
     }
     currentClassPrefix = currentClass->name.toUtf8();
-    currentClassPrefix.append(2, ':');
+    currentClassPrefix.append("::");
     for(auto & i : currentClass->memberfunction)
     {
         char label[MAX_LABEL_SIZE];
@@ -205,7 +206,7 @@ QString PluginMainWindow::functionHtml(MyClass* currentClass)
     currentClass->memberfunction.subtract(stalefunction);
     stalefunction.clear();
     currentClassPrefix.clear();
-    std::sort(funcs.begin(), funcs.end(), [](auto & x, auto & y){
+    std::sort(funcs.begin(), funcs.end(), [](const FuncPair & x, const FuncPair & y){
         return x.first < y.first;
     });
     html.append(tr("<h3>Member functions:</h3><ul>"));
