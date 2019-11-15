@@ -1,4 +1,7 @@
 # Classroom
+
+[![Build status](https://ci.appveyor.com/api/projects/status/w0e2ktpd48ji47y6/branch/master?svg=true)](https://ci.appveyor.com/project/x64dbg/classroom/branch/master)
+
 ![Classroom](https://user-images.githubusercontent.com/15761310/68860016-890d1b80-06e0-11ea-850f-6bd6622f2613.png)
 
 Classroom is a x64dbg plugin that helps you analyze an object-oriented application. You can define member functions and member variables while you are debugging the application, and the class documentation will be saved and displayed whenever you need them.
