@@ -15,6 +15,7 @@ class MyClass
 public:
     MyClass();
     QString name;//name of this class.
+    QString module;//module name of this class
     QString comment;//description of this class.
     int size;//size of this class. -1 if unknown.
     //Labeling the member function starting with "name::" will make it a member of the class.

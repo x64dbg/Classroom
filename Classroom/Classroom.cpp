@@ -104,6 +104,9 @@ void QtPlugin::cbSelChanged(void* VA)
         {
             if(!currentClass->memberfunction.contains(start))
             {
+                char module[MAX_MODULE_SIZE];
+                if(currentClass->module.size() == 0 && DbgGetModuleAt(start, module))
+                    currentClass->module = QString::fromUtf8(module);
                 currentClass->memberfunction.insert(start);
                 QtPlugin::Refresh();
             }

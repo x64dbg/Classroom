@@ -162,7 +162,12 @@ QString PluginMainWindow::classHtml()
     if(currentClass == nullptr)
         return placeholderHtml();
     //Header
-    html[0]="<h2>"+html[0].toHtmlEscaped()+tr("</h2><p>Size:");
+    html[0]="<h2>"+html[0].toHtmlEscaped()+tr("</h2><p>Module: ");
+    if(currentClass->module.isEmpty())
+        html.append(tr("<i>Module not defined (Please add a member function)</i>"));
+    else
+        html.append(currentClass->module.toHtmlEscaped());
+    html.append(tr(" Size:"));
     html.append(currentClass->size == -1 ? tr("<i>Unknown size</i>") : QString::number(currentClass->size));
     html.append(tr(" <a href=\"x64dbg://localhost/command#classroom %1\">Edit</a> <a href=\"x64dbg://localhost/command#delclass %1\">Delete</a>").arg(currentClass->name.toHtmlEscaped()));
     html.append(tr("</p><h3>Descriptions:</h3><p>")+currentClass->comment.toHtmlEscaped().replace("\n","<br/>")+"</p>");
@@ -186,7 +191,7 @@ QString PluginMainWindow::functionHtml(MyClass* currentClass)
     {
         return tr("<h3>Member functions:</h3><p>No member functions known for this class.</p>")
                 +tr("<p>To define a function as a member of this class, add a label to the function that starts with \"%1::\". Make sure to also define the function boundary with Add Function or Analyze.</p>").arg(currentClass->name.toHtmlEscaped())
-                +tr("<p>If you already defined some member functions but they don't show here, you have to go to these functions in the disassembly view so that the data will be updated.</p>");
+                +tr("<p>If you already defined some member functions but they don't show here, <a href=\"x64dbg://localhost/command#refreshmembervar\">Refresh the list</a>. Note: The module must be loaded before member functions can be displayed.</p>");
     }
     currentClassPrefix = currentClass->name.toUtf8();
     currentClassPrefix.append("::");
@@ -227,6 +232,8 @@ QString PluginMainWindow::functionHtml(MyClass* currentClass)
         html.append(QString("&nbsp;&nbsp;<a href=\"x64dbg://localhost/commentat#") + ptrstr + tr("\">Edit</a></p>"));
         html.append("<hr/>");
     }
+    html.append("<p><a href=\"x64dbg://localhost/command#refreshmembervar\">Refresh the list.</a></p>");
+    html.append(tr("<p>To define a function as a member of this class, add a label to the function that starts with \"%1::\". Make sure to also define the function boundary with Add Function or Analyze.</p>").arg(currentClass->name.toHtmlEscaped()));
     return html.join("");
 }
 

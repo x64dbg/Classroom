@@ -1,6 +1,7 @@
 #include "pluginmain.h"
 #include "Classroom.h"
 #include "MyClass.h"
+#include "pluginsdk/_scriptapi_label.h"
 
 #define plugin_name "Classroom"
 #define plugin_version 1
@@ -14,11 +15,12 @@ int Plugin::hMenuStack;
 int Plugin::hMenuGraph;
 int Plugin::hMenuMemmap;
 int Plugin::hMenuSymmod;
-QList<MyClass*> Plugin::classroom;
+QList<MyClass*> Plugin::classroom;//TODO:this needs a lock to ensure thread-safe operation
 //Callback
 void cbPauseDebug(CBTYPE cbType, void* reserved);
 void cbStopDebug(CBTYPE cbType, void* reserved);
 void cbInitDebug(CBTYPE cbType, void* arg);
+void cbLoadDLL(CBTYPE cbType, PLUG_CB_LOADDLL* arg);
 void cbSelChanged(CBTYPE cbType, PLUG_CB_SELCHANGED* arg);
 void cbLoadDb(CBTYPE cbType, PLUG_CB_LOADSAVEDB* arg);//see Database.cpp
 void cbSaveDb(CBTYPE cbType, PLUG_CB_LOADSAVEDB* arg);//see Database.cpp
@@ -27,6 +29,7 @@ bool cmdClassroom(int argc, char** argv);
 bool cmdClassMemberVar(int argc, char** argv);
 bool cmdDelClass(int argc, char** argv);
 bool cmdDelClassMemberVar(int argc, char** argv);
+bool cmdRefreshMemberFun(int argc, char** argv);
 
 extern "C" __declspec(dllexport) bool pluginit(PLUG_INITSTRUCT* initStruct)
 {
@@ -53,6 +56,7 @@ extern "C" __declspec(dllexport) void plugsetup(PLUG_SETUPSTRUCT* setupStruct)
     _plugin_registercallback(Plugin::handle, CB_INITDEBUG, cbInitDebug);
     _plugin_registercallback(Plugin::handle, CB_PAUSEDEBUG, cbPauseDebug);
     _plugin_registercallback(Plugin::handle, CB_STOPDEBUG, cbStopDebug);
+    _plugin_registercallback(Plugin::handle, CB_LOADDLL, (CBPLUGIN)cbLoadDLL);
     _plugin_registercallback(Plugin::handle, CB_SELCHANGED, (CBPLUGIN)cbSelChanged);
     _plugin_registercallback(Plugin::handle, CB_LOADDB, (CBPLUGIN)cbLoadDb);
     _plugin_registercallback(Plugin::handle, CB_SAVEDB, (CBPLUGIN)cbSaveDb);
@@ -60,6 +64,7 @@ extern "C" __declspec(dllexport) void plugsetup(PLUG_SETUPSTRUCT* setupStruct)
     _plugin_registercommand(Plugin::handle, "classmembervar", cmdClassMemberVar, true);
     _plugin_registercommand(Plugin::handle, "delclass", cmdDelClass, true);
     _plugin_registercommand(Plugin::handle, "delclassmembervar", cmdDelClassMemberVar, true);
+    _plugin_registercommand(Plugin::handle, "refreshmemberfun", cmdRefreshMemberFun, true);
     QtPlugin::WaitForSetup();
 }
 
@@ -70,6 +75,7 @@ extern "C" __declspec(dllexport) bool plugstop()
     _plugin_unregistercallback(Plugin::handle, CB_INITDEBUG);
     _plugin_unregistercallback(Plugin::handle, CB_PAUSEDEBUG);
     _plugin_unregistercallback(Plugin::handle, CB_STOPDEBUG);
+    _plugin_unregistercallback(Plugin::handle, CB_LOADDLL);
     _plugin_unregistercallback(Plugin::handle, CB_SELCHANGED);
     _plugin_unregistercallback(Plugin::handle, CB_LOADDB);
     _plugin_unregistercallback(Plugin::handle, CB_SAVEDB);
@@ -77,6 +83,7 @@ extern "C" __declspec(dllexport) bool plugstop()
     _plugin_unregistercommand(Plugin::handle, "classmembervar");
     _plugin_unregistercommand(Plugin::handle, "delclass");
     _plugin_unregistercommand(Plugin::handle, "delclassmembervar");
+    _plugin_unregistercommand(Plugin::handle, "refreshmemberfun");
     return true;
 }
 //Functions
@@ -133,6 +140,19 @@ void cbStopDebug(CBTYPE cbType, void* reserved)
 void cbInitDebug(CBTYPE cbType, void* arg)
 {
     GuiExecuteOnGuiThread(QtPlugin::cbInit);
+}
+
+void cbLoadDLL(CBTYPE cbType, PLUG_CB_LOADDLL* arg)
+{
+    for(const auto & i : Plugin::classroom)
+    {
+        if(stricmp(i->module.toUtf8().constData(), arg->modname) == 0)
+        {
+            //If a module is loaded and a class is defined in this module, search for any member functions.
+            cmdRefreshMemberFun(0, nullptr);
+            return;
+        }
+    }
 }
 
 void cbSelChanged(CBTYPE cbType, PLUG_CB_SELCHANGED* arg)
@@ -223,4 +243,31 @@ bool cmdDelClassMemberVar(int argc, char** argv)
         GuiExecuteOnGuiThreadEx((GUICALLBACKEX)QtPlugin::cbDelClassMemberVar, newbuffer);
         return true;
     }
+}
+
+bool cmdRefreshMemberFun(int argc, char** argv)
+{
+    ListInfo list;
+    Script::Label::GetList(&list);
+    for(int i = 0; i < list.count; i++)
+    {
+        const Script::Label::LabelInfo& label = ((Script::Label::LabelInfo*)list.data)[i];
+        duint base = DbgModBaseFromName(label.mod);
+        if(base == 0)
+            continue;
+        for(int j = 0; j < Plugin::classroom.size(); j++)
+        {
+            MyClass& currentClass = *Plugin::classroom[j];
+            QByteArray currentPrefix = currentClass.name.toUtf8().append("::");
+            if(memcmp(label.text, currentPrefix.constData(), currentPrefix.size()) == 0)
+            {
+                currentClass.memberfunction.insert(label.rva + base);
+                if(currentClass.module.size() == 0)
+                    currentClass.module = QString::fromUtf8(label.mod);
+            }
+        }
+    }
+    BridgeList<Script::Label::LabelInfo>::Free(&list);
+    GuiExecuteOnGuiThread(QtPlugin::RefreshClasses);
+    return true;
 }

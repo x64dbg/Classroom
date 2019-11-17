@@ -31,6 +31,9 @@ void cbLoadDb(CBTYPE cbType, PLUG_CB_LOADSAVEDB* arg)
             value = json_object_get(classJSON, "comment");
             if(json_is_string(value))
                 currentClass->comment = QString::fromUtf8(json_string_value(value));
+            value = json_object_get(classJSON, "module");
+            if(json_is_string(value))
+                currentClass->module = QString::fromUtf8(json_string_value(value));
             value = json_object_get(classJSON, "membervariable");
             if(json_is_array(value))
             {
@@ -79,6 +82,7 @@ void cbSaveDb(CBTYPE cbType, PLUG_CB_LOADSAVEDB* arg)
             json_object_set_new(classJSON, "label", json_string(currentClass->name.toUtf8().constData()));
             json_object_set_new(classJSON, "size", json_integer(currentClass->size));
             json_object_set_new(classJSON, "comment", json_string(currentClass->comment.toUtf8().constData()));
+            json_object_set_new(classJSON, "module", json_string(currentClass->module.toUtf8().constData()));
             //TODO: member functions need to save with module name! Using "mod.hash(addr)" expression function.
             membervariable = json_array();
             for(auto & i : currentClass->membervariable)
