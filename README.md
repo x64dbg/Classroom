@@ -1,6 +1,6 @@
 # Classroom
 
-[![Build status](https://ci.appveyor.com/api/projects/status/w0e2ktpd48ji47y6/branch/master?svg=true)](https://ci.appveyor.com/project/x64dbg/classroom/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/w0e2ktpd48ji47y6/branch/master?svg=true)](https://ci.appveyor.com/project/x64dbg/classroom/branch/master) [Download from Appveyor](https://ci.appveyor.com/project/x64dbg/classroom/branch/master/artifacts)
 
 ![Classroom](https://user-images.githubusercontent.com/15761310/68860016-890d1b80-06e0-11ea-850f-6bd6622f2613.png)
 
