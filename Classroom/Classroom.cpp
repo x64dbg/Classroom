@@ -36,7 +36,7 @@ void QtPlugin::Setup()
 {
     QWidget* parent = getParent();
     pluginDialog = new PluginDialog(parent);
-    pluginDialog->show();
+    pluginDialog->hide();
     pluginTabWidget = new PluginTabWidget(parent);
     GuiAddQWidgetTab(pluginTabWidget);
 
